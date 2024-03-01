@@ -2,6 +2,7 @@
 using namespace std;
 #define ll long long
 #include <fstream>
+//kartikey
 
 void getopCode(string have, string ){ // For R,I,S,SB,U,UJ Format
     
