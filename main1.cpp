@@ -16,6 +16,7 @@ ll dc = 268435456; // data counter satrts with 0x10000000
 
 string binaryToHex(string& binary) { 
     // Convert binary string to hexadecimal
+    if(error == true) return "";
     stringstream ss;
     ss << hex << setw(8) << setfill('0')<< bitset<32>(binary).to_ulong();
 
@@ -26,6 +27,7 @@ string binaryToHex(string& binary) {
     return hex;
 }
 string decimalToBinary(int decimalNumber) {
+    if(error == true) return "";
     string binaryNumber = "";
     for (int i = 4; i >= 0; i--) {
         int bit = (decimalNumber >> i) & 1;
@@ -86,6 +88,7 @@ void getFunc7(string have, string &s){ // For R Format
 
 string immediateToBinary12(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
+    if(error == true) return "";
     ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
@@ -109,6 +112,7 @@ string immediateToBinary12(string& immediate) {
 }
 string immediateToBinary13(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
+    if(error == true) return "";
     ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
@@ -131,6 +135,7 @@ string immediateToBinary13(string& immediate) {
     return bits.to_string();
 }
 string immediateToBinary20(string& immediate) {
+    if(error == true) return "";
     // Check if the immediate value is in decimal, binary, or hexadecimal format
     ll value;
     if (immediate.substr(0, 2) == "0b") {
@@ -155,6 +160,7 @@ string immediateToBinary20(string& immediate) {
     return bits.to_string();
 }
 string immediateToBinary21(string& immediate) {
+    if(error == true) return "";
     // Check if the immediate value is in decimal, binary, or hexadecimal format
     ll value;
     if (immediate.substr(0, 2) == "0b") {
@@ -174,11 +180,13 @@ string immediateToBinary21(string& immediate) {
     return bits.to_string();
 }
 void getImmediateI(string have, string &s){ // For I,S,SB,U,UJ Format
+    if(error == true) return ;
     // have can be in any format
     s+=immediateToBinary12(have);
 }
 void getImmediateSlast(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
+    if(error == true) return;
     string bin = immediateToBinary12(have); 
     
     for(int i = 0; i <= 6 ;i++){
@@ -187,10 +195,30 @@ void getImmediateSlast(string have, string &s){ // For I,S,SB,U,UJ Format
 }
 void getImmediateSfirst(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
+    if(error == true) return ;
     string bin = immediateToBinary12(have); 
     for(int i = 7; i <= 11 ;i++){
         s.push_back(bin[i]);
     }
+}
+
+void getImmediateSBlast(string have, string &s){ // For I,S,SB,U,UJ Format
+    // have can be in any format
+    if(error == true) return;
+    string bin = immediateToBinary13(have); 
+    s.push_back(bin[0]);
+    for(int i = 2; i <= 7 ;i++){
+        s.push_back(bin[i]);
+    }
+}
+void getImmediateSBfirst(string have, string &s){ // For I,S,SB,U,UJ Format
+    // have can be in any format
+    if(error == true) return ;
+    string bin = immediateToBinary13(have); 
+    for(int i = 8; i <= 11 ;i++){
+        s.push_back(bin[i]);
+    }
+    s.push_back(bin[1]);
 }
 
 
@@ -233,6 +261,7 @@ void getRegisterValue(string have, string &s){ // For R,I,S,SB,,U,UJ Format
 }
 
 string Formatdecider(string have){
+    if(error == true) return "";
     if(have == "add" ||have == "and" ||have == "or" ||have == "sll" ||have == "slt" ||have == "sra" ||
         have == "srl" ||have == "sub" ||have == "xor" ||have == "mul" ||have == "div" ||have == "rem") return "R";
     else if (have == "addi"||have == "andi" ||have == "ori" ||have == "lb" ||have == "ld" ||have == "lh" ||have == "lw" ||
@@ -407,6 +436,7 @@ void helper_I(string sentence){
 void helper_S(string sentence){
         // having offset sw x5, 4(x3)  --> NOT supported
         // sw x5 4 x3 :: sw x5, 4 (  x3 )  --> supported
+        if(error == true) return ;
         istringstream iss(sentence);
         string word;
         int count = 1;
@@ -450,7 +480,7 @@ void helper_S(string sentence){
             continue;
         }
     }
-    if(count == 4){
+    if(count <= 4){
         fout<<"\n\n*****Error Detected*****\n\n";
         fout<<"*****Syntax Error*****\n\n";
         error = true;
@@ -470,14 +500,85 @@ void helper_S(string sentence){
 // two case direct imm or labelwise in SB , U , UJ format
 
 void helper_SB(string sentence){
+    if(error == true) return ;
     // can have any label or direct immediate value
     // label[***] - current pc = imm
     // value can be negative  --> can be overflow take care
 
+        // beq rs1, rs2, label/imm
+        istringstream iss(sentence);
+        string word;
+        int count = 1;
+        string command,rs1,rs2,imm,tag;
 
+        while(iss >> word){
+            string keep; 
+        if(word == "," || word == ")" || word == "(") continue;
+        if(word[word.size()-1] == ',' ) word.pop_back(); 
+        if(word[word.size()-1] == ')' ) word.pop_back(); 
+        if(word[0] == '(' ) {
+            for(int i = 1; i < word.size();i++) keep.push_back(word[i]);
+            word = keep;
+            if(word == "x") {
+                // as it is separated from original register
+                fout<<"\n\n*****Error Detected*****\n\n";
+                fout<<"*****Register Not Found*****\n\n";
+                error = true;
+                return;          
+            }
+        }
+       
+        if(count == 1) {
+            command = word;
+            count++;
+            continue;
+        }
+        if(count == 2){
+            rs1 = word;
+            count++;
+            continue;
+        }
+        if(count == 3){
+            rs2 = word;
+            count++;
+            continue;
+        }
+        if(count == 4){
+            tag = word;
+            count++;
+            continue;
+        }
+    }
+    if(count <= 4){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****Syntax Error*****\n\n";
+        error = true;
+        return;      
+    }
+        string ans;
+        // tag can contains imm value or label that we have in our map
+       
 
+        if(label.find(tag) != label.end()){
+            // tag found
+            
+           // cout<<"okay "<<label[tag]<<" "<<pc<<endl;
+            imm = to_string(label[tag] - pc);
+            //cout<<imm<<endl;
+        }
+        else imm = tag;
+     
+
+        getImmediateSBlast(imm,ans);
+        getRegisterValue(rs2,ans);
+        getRegisterValue(rs1,ans);
+        getFunc3(command,ans);
+        getImmediateSBfirst(imm,ans);
+        getopCode(command,ans);
+        having = binaryToHex(ans);
 }
 void helper_U(string sentence){
+    if(error == true) return;
     // can have any label or direct immediate value
     // label [***] = imm  {both lui and auipc acts like this}
     // value can't be negative  --> can be overflow take care
@@ -485,12 +586,14 @@ void helper_U(string sentence){
 
 }
 void helper_UJ(string sentence){
+    if(error == true) return ;
     // can have any label or direct immediate value
     // label[***] - current pc = imm 
     // value can be negative --> never overflow
 }
 string memConverter(string& value, int digits) {
     // Convert value to decimal
+    if(error == true) return "";
     int decimalValue;
     if (value.substr(0, 2) == "0b") {
         // Binary format
@@ -510,6 +613,7 @@ string memConverter(string& value, int digits) {
 }
 
 void read_data(){
+    if(error == true) return ;
     ifstream file;
     file.open("SuperbasicTest.txt");
     string sentence;
@@ -633,7 +737,7 @@ void read_data(){
                 }
             }
             else {
-                if(directives == "\0") break;
+                if(directives == "\0") continue;
                 fout<<"\n\n*****Error Detected*****\n\n";
                 fout<<"*****No Such Assembly Directive is availabel *****\n\n";
                 error = true;
@@ -643,23 +747,60 @@ void read_data(){
         }
         
     }
-    // testing 
+    // testing purpose
     
-    for(int i = 0; i < 50; i++){
-        for(int j = 0; j < 8; j++){
-            if(j%2 == 0)cout<<" ";
-            cout<<memory[i][j];
-        }
-        cout<<endl;
-    }
+    // for(int i = 0; i < 50; i++){
+    //     for(int j = 0; j < 8; j++){
+    //         if(j%2 == 0)cout<<" ";
+    //         cout<<memory[i][j];
+    //     }
+    //     cout<<endl;
+    // }
 
     file.close();
 }
+void capture_label(){
+    
+    if(error == true) return ;
+    ifstream file;
+    file.open("SuperbasicTest.txt");
+    string sentence;
+    ll tempPC = 0;
+    while(getline(file,sentence)){
+        istringstream iss(sentence);
+        string word;
+        iss >> word;
+        if(word[word.size()-1]==':') {
+            if(label.find(word) == label.end()) {
+                word.pop_back();
+                label[word] = tempPC;
+            }
+            else{
+                
+                fout<<"\n\n*****Error Detected*****\n\n";
+                fout<<"*****label is already declared !! *****\n\n";
+                error = true;
+                return;     
+            }
+        }
+        if(Formatdecider(word) != "NULL") tempPC+=4;
+    }
+   // for testing purpose
 
+    // for(auto val:label){
+    //     cout<<val.first<<" "<<val.second<<endl;
+    // }
+
+    file.close();
+}
 int main()
 {
     // scan one time for reading the data segment
-     read_data();
+    read_data();
+    // scan once again for capturing the label in the given code 
+    capture_label();
+    
+    
     fin.open("SuperbasicTest.txt");
     string sentence;
     while (getline (fin, sentence)) { // take command line
@@ -667,13 +808,14 @@ int main()
         string word;
         iss >> word;
         // decide the format 
+        
         if(word[word.size()-1]==':') {
-            // keep the program counter 
-            label[word] = pc;
             continue;
         }
-        if(word == ".data" || word == ".text") continue;
-
+        if(word == ".data" || word == ".text" || word == ".byte" ||
+           word == ".word" || word == ".half" || word == ".dword" || word == ".asciiz") continue;
+        if(word == "\0") continue;
+        
         if(Formatdecider(word) == "R"){
             helper_R(sentence);
             string temp;
@@ -682,7 +824,7 @@ int main()
             temp+=ss.str();
             temp+="         ";
             temp+=having;
-            cout<<temp<<endl;
+            
             final.push_back(temp); 
             having.clear();
         }
@@ -694,7 +836,7 @@ int main()
             temp+=ss.str();
             temp+="         ";
             temp+=having;
-             cout<<temp<<endl;
+            
             final.push_back(temp); 
             having.clear();
         }
@@ -706,7 +848,7 @@ int main()
             temp+=ss.str();
             temp+="         ";
             temp+=having;
-             cout<<temp<<endl;
+             
             final.push_back(temp); 
             having.clear();
         }
@@ -753,9 +895,9 @@ int main()
         pc+=4;
     }
     
-    // for(auto val:final){
-    //     cout<<val<<endl;
-    // }
+    for(auto val:final){
+        cout<<val<<endl;
+    }
     fin.close();
     fout.close();
     return 0;
