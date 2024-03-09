@@ -61,24 +61,26 @@
 
 3. **S Format**
    - **sb rs2, imm (rs1)**: Stores the lowest byte of the value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
-   **Note**: Ensure there is a space between imm and (rs1).
+
+   
+    **Note**: Ensure there is a space between imm and (rs1).
 
    - **sw rs2, imm (rs1)**: Stores the entire 32-bit value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
    - **sd rs2, imm (rs1)**: Stores the entire 64-bit value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
    - **sh rs2, imm (rs1)**: Stores the lowest half word (16 bits) of the value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
  
 
-4. **SB Format**
+5. **SB Format**
    - **beq rs1, rs2, label**: Branches to the instruction at the specified label if the values in registers rs1 and rs2 are equal.
    - **bne rs1, rs2, label**: Branches to the instruction at the specified label if the values in registers rs1 and rs2 are not equal.
    - **bge rs1, rs2, label**: Branches to the instruction at the specified label if the value in register rs1 is greater than or equal to the value in register rs2.
    - **blt rs1, rs2, label**: Branches to the instruction at the specified label if the value in register rs1 is less than the value in register rs2.
 
-5. **U Format**
+6. **U Format**
    - **auipc rd, imm**: Adds the immediate value imm to the address of the current instruction (PC), sign-extends the result to 64 bits, and stores it in register rd.
    - **lui rd, imm**: Loads the immediate value imm into the upper 20 bits of register rd and zeroes out the lower 12 bits.
 
-6. **UJ Format**
+7. **UJ Format**
    - **jal rd, label**: Jumps to the instruction at the specified label and stores the address of the instruction following the jal instruction in register rd.
 
 ### Assembler Directives
