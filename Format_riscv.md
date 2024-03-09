@@ -61,7 +61,8 @@
 
 3. **S Format**
    - **sb rs2, imm (rs1)**: Stores the lowest byte of the value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
-   Note: Ensure there is a space between imm and (rs1).
+   **Note**: Ensure there is a space between imm and (rs1).
+
    - **sw rs2, imm (rs1)**: Stores the entire 32-bit value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
    - **sd rs2, imm (rs1)**: Stores the entire 64-bit value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
    - **sh rs2, imm (rs1)**: Stores the lowest half word (16 bits) of the value in register rs2 to the memory address calculated by adding the immediate value imm to the value in register rs1.
