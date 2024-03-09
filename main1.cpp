@@ -4,9 +4,15 @@ using namespace std;
 #include <fstream>
 ofstream fout;
 ifstream fin;
+vector<vector<char>> memory(500,vector<char>(8,'0'));
 bool error = false;
+ll pc = 0; // program counter starts with 0x00000000
+vector<string> final;
+string having;
+unordered_map <string, int> label;
+ll dc = 268435456; // data counter satrts with 0x10000000
 
-vector<string> finalhexadecimal;
+
 
 string binaryToHex(string& binary) { 
     // Convert binary string to hexadecimal
@@ -80,7 +86,7 @@ void getFunc7(string have, string &s){ // For R Format
 
 string immediateToBinary12(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
-    int value;
+    ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
         value = stoi(immediate.substr(2), nullptr, 2);
@@ -91,14 +97,19 @@ string immediateToBinary12(string& immediate) {
         // Decimal format
         value = stoi(immediate);
     }
-
+    if(value >= 2048 || value <= -2049){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****Value Overflow*****\n\n";
+        error = true;
+        return "Error";     
+    }
     // Convert the value to a 12-bit binary string
     bitset<12> bits(value);
     return bits.to_string();
 }
 string immediateToBinary13(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
-    int value;
+    ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
         value = stoi(immediate.substr(2), nullptr, 2);
@@ -109,14 +120,19 @@ string immediateToBinary13(string& immediate) {
         // Decimal format
         value = stoi(immediate);
     }
-
+    if(value >= 4096 || value <= -4097){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****Value Overflow*****\n\n";
+        error = true;
+        return "Error";     
+    }
     // Convert the value to a 12-bit binary string
     bitset<13> bits(value);
     return bits.to_string();
 }
 string immediateToBinary20(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
-    int value;
+    ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
         value = stoi(immediate.substr(2), nullptr, 2);
@@ -128,13 +144,19 @@ string immediateToBinary20(string& immediate) {
         value = stoi(immediate);
     }
 
+    if(value >= 1048576 || value <= -1){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****Value Overflow*****\n\n";
+        error = true;
+        return "Error";     
+    }
     // Convert the value to a 12-bit binary string
     bitset<20> bits(value);
     return bits.to_string();
 }
 string immediateToBinary21(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
-    int value;
+    ll value;
     if (immediate.substr(0, 2) == "0b") {
         // Binary format
         value = stoi(immediate.substr(2), nullptr, 2);
@@ -145,6 +167,7 @@ string immediateToBinary21(string& immediate) {
         // Decimal format
         value = stoi(immediate);
     }
+    // never overflows
 
     // Convert the value to a 12-bit binary string
     bitset<21> bits(value);
@@ -153,6 +176,21 @@ string immediateToBinary21(string& immediate) {
 void getImmediateI(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     s+=immediateToBinary12(have);
+}
+void getImmediateSlast(string have, string &s){ // For I,S,SB,U,UJ Format
+    // have can be in any format
+    string bin = immediateToBinary12(have); 
+    
+    for(int i = 0; i <= 6 ;i++){
+        s.push_back(bin[i]);
+    }
+}
+void getImmediateSfirst(string have, string &s){ // For I,S,SB,U,UJ Format
+    // have can be in any format
+    string bin = immediateToBinary12(have); 
+    for(int i = 7; i <= 11 ;i++){
+        s.push_back(bin[i]);
+    }
 }
 
 
@@ -248,8 +286,8 @@ void helper_R(string sentence){
         getFunc3(command,ans);
         getRegisterValue(rd,ans);
         getopCode(command,ans);
+        having = binaryToHex(ans);
         
-        finalhexadecimal.push_back(binaryToHex(ans)); 
 }
 
 void helper_I(string sentence){
@@ -298,21 +336,33 @@ void helper_I(string sentence){
             getRegisterValue(rd,ans);
             getopCode(command,ans);
             
-            finalhexadecimal.push_back(binaryToHex(ans)); 
+            having = binaryToHex(ans);
         
         }
         else{
-            // having offset lw x5, 4(x3)  ::: lw x5, 4 ( x3 ) --> NOT supported
-            // lw x5 4 x3 -->supported
+            // having offset lw x5, 4(x3)  --> NOT supported
+            // lw x5 4 x3 :: lw x5, 4 (  x3 )  --> supported
             istringstream iss(sentence);
             string word;
             int count = 1;
             string command,rs1,rd,imm;
        
             while(iss >> word){
-            
-            if(word == ",") continue;
+               string keep; 
+            if(word == "," || word == ")" || word == "(") continue;
             if(word[word.size()-1] == ',' ) word.pop_back(); 
+            if(word[word.size()-1] == ')' ) word.pop_back(); 
+            if(word[0] == '(' ) {
+                for(int i = 1; i < word.size();i++) keep.push_back(word[i]);
+                word = keep;
+                if(word == "x") {
+                    // as it is separated from original register
+                    fout<<"\n\n*****Error Detected*****\n\n";
+                    fout<<"*****Register Not Found*****\n\n";
+                    error = true;
+                    return;          
+                }
+            }
             
             if(count == 1) {
                 command = word;
@@ -335,6 +385,12 @@ void helper_I(string sentence){
                 continue;
             }
         }
+        if(count == 4){
+            fout<<"\n\n*****Error Detected*****\n\n";
+            fout<<"*****Syntax Error*****\n\n";
+            error = true;
+            return;      
+        }
             string ans;
     
             getImmediateI(imm,ans);
@@ -342,65 +398,364 @@ void helper_I(string sentence){
             getFunc3(command,ans);
             getRegisterValue(rd,ans);
             getopCode(command,ans);
+            having = binaryToHex(ans);
             
-            finalhexadecimal.push_back(binaryToHex(ans)); 
         }
    
 }
+
 void helper_S(string sentence){
-    
+        // having offset sw x5, 4(x3)  --> NOT supported
+        // sw x5 4 x3 :: sw x5, 4 (  x3 )  --> supported
+        istringstream iss(sentence);
+        string word;
+        int count = 1;
+        string command,rs1,rs2,imm;
+
+        while(iss >> word){
+            string keep; 
+        if(word == "," || word == ")" || word == "(") continue;
+        if(word[word.size()-1] == ',' ) word.pop_back(); 
+        if(word[word.size()-1] == ')' ) word.pop_back(); 
+        if(word[0] == '(' ) {
+            for(int i = 1; i < word.size();i++) keep.push_back(word[i]);
+            word = keep;
+            if(word == "x") {
+                // as it is separated from original register
+                fout<<"\n\n*****Error Detected*****\n\n";
+                fout<<"*****Register Not Found*****\n\n";
+                error = true;
+                return;          
+            }
+        }
+       
+        if(count == 1) {
+            command = word;
+            count++;
+            continue;
+        }
+        if(count == 2){
+            rs2 = word;
+            count++;
+            continue;
+        }
+        if(count == 3){
+            imm = word;
+            count++;
+            continue;
+        }
+        if(count == 4){
+            rs1 = word;
+            count++;
+            continue;
+        }
+    }
+    if(count == 4){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****Syntax Error*****\n\n";
+        error = true;
+        return;      
+    }
+        string ans;
+
+        getImmediateSlast(imm,ans);
+        getRegisterValue(rs2,ans);
+        getRegisterValue(rs1,ans);
+        getFunc3(command,ans);
+        getImmediateSfirst(imm,ans);
+        getopCode(command,ans);
+        having = binaryToHex(ans);
 }
+
+// two case direct imm or labelwise in SB , U , UJ format
+
 void helper_SB(string sentence){
+    // can have any label or direct immediate value
+    // label[***] - current pc = imm
+    // value can be negative  --> can be overflow take care
+
+
 
 }
 void helper_U(string sentence){
+    // can have any label or direct immediate value
+    // label [***] = imm  {both lui and auipc acts like this}
+    // value can't be negative  --> can be overflow take care
+
 
 }
 void helper_UJ(string sentence){
+    // can have any label or direct immediate value
+    // label[***] - current pc = imm 
+    // value can be negative --> never overflow
+}
+string memConverter(string& value, int digits) {
+    // Convert value to decimal
+    int decimalValue;
+    if (value.substr(0, 2) == "0b") {
+        // Binary format
+        decimalValue = stoi(value.substr(2), nullptr, 2);
+    } else if (value.substr(0, 2) == "0x") {
+        // Hexadecimal format
+        decimalValue = stoi(value.substr(2), nullptr, 16);
+    } else {
+        // Decimal format
+        decimalValue = stoi(value);
+    }
 
+    // Convert decimal value to hexadecimal string with specified number of digits
+    stringstream ss;
+    ss << hex << setw(digits) << setfill('0') << uppercase << decimalValue;
+    return ss.str();
+}
+
+void read_data(){
+    ifstream file;
+    file.open("SuperbasicTest.txt");
+    string sentence;
+    bool start = false;
+    int row = 0, col = 0;
+    // row [0-499]  , col [0-7]
+    while(getline(file,sentence)){
+        istringstream iss(sentence);
+        string word;
+        iss >> word;
+        if(word == ".text") {start = false; continue;}
+        if(word == ".data"){ start = true; continue;}
+        if(start){
+            istringstream isss(sentence);
+            string directives;
+            isss >> directives;
+            if(directives[directives.size()-1]==':') isss >> directives;
+
+            if(directives == ".byte"){
+                while(isss >> directives){
+                     string temp = memConverter(directives,2);
+                    
+                    int idx = 0, i = row, j = col;
+                    
+                        for( ;idx < temp.size();){
+                            memory[i][j++] = temp[idx++];
+                            if(j == 8){
+                                i++;
+                                j=0;
+                            }
+                        }
+                    
+                    if(j == 8) j = 0;
+                    col = j;
+                    row = i; // update the row and column
+                }
+            }
+            else if(directives == ".word"){
+              
+                while(isss >> directives){
+                    
+                    string temp = memConverter(directives,8);
+                    
+                    int idx = 0,i = row,j = col;
+                    
+                        for( ;idx < temp.size();){
+                            memory[i][j++] = temp[idx++];
+                            if(j == 8){
+                                i++;
+                                j=0;
+                            }
+                        }
+                    
+                    if(j == 8) j = 0;
+                    col = j;
+                    row = i; // update the row and column
+                }
+            }
+            else if(directives == ".half"){
+                while(isss >> directives){
+                    string temp = memConverter(directives,4);
+                    
+                    int idx = 0,i = row,j = col;
+                    
+                        for( ;idx < temp.size();){
+                            memory[i][j++] = temp[idx++];
+                            if(j == 8){
+                                i++;
+                                j=0;
+                            }
+                        }
+                    
+                    if(j == 8) j = 0;
+                    col = j;
+                    row = i; // update the row and column
+                }
+            }
+            else if(directives == ".dword"){
+                while(isss >> directives){
+                    string temp = memConverter(directives,16);
+                    
+                    int idx = 0,i = row,j = col;
+                    
+                        for( ;idx < temp.size();){
+                            memory[i][j++] = temp[idx++];
+                            if(j == 8){
+                                i++;
+                                j=0;
+                            }
+                        }
+                    
+                    if(j == 8) j = 0;
+                    col = j;
+                    row = i; // update the row and column
+                }
+            }
+            else if(directives == ".asciiz"){
+                isss >> directives;
+                string keep ;
+                // as I need to remove "  " from string
+                for(int i = 1; i < directives.size() - 1; i++) keep.push_back(directives[i]);
+               
+                for(int k = 0; k < keep.size(); k++){
+                    string p;
+                    p = to_string((int)(keep[k]));
+                    string temp = memConverter(p,2);
+                    
+                    int idx = 0,i = row,j = col;
+                    
+                        for( ;idx < temp.size();){
+                            memory[i][j++] = temp[idx++];
+                            if(j == 8){
+                                i++;
+                                j=0;
+                            }
+                        }
+                    
+                    if(j == 8) j = 0;
+                    col = j;
+                    row = i; // update the row and column
+                }
+            }
+            else {
+                if(directives == "\0") break;
+                fout<<"\n\n*****Error Detected*****\n\n";
+                fout<<"*****No Such Assembly Directive is availabel *****\n\n";
+                error = true;
+                
+                return;               
+            }
+        }
+        
+    }
+    // testing 
+    
+    for(int i = 0; i < 50; i++){
+        for(int j = 0; j < 8; j++){
+            if(j%2 == 0)cout<<" ";
+            cout<<memory[i][j];
+        }
+        cout<<endl;
+    }
+
+    file.close();
 }
 
 int main()
 {
-    
+    // scan one time for reading the data segment
+     read_data();
     fin.open("SuperbasicTest.txt");
     string sentence;
     while (getline (fin, sentence)) { // take command line
         istringstream iss(sentence);
-            string word;
+        string word;
         iss >> word;
         // decide the format 
-        
+        if(word[word.size()-1]==':') {
+            // keep the program counter 
+            label[word] = pc;
+            continue;
+        }
+        if(word == ".data" || word == ".text") continue;
+
         if(Formatdecider(word) == "R"){
             helper_R(sentence);
-            
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+            cout<<temp<<endl;
+            final.push_back(temp); 
+            having.clear();
         }
         if(Formatdecider(word) == "I"){
             helper_I(sentence);
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+             cout<<temp<<endl;
+            final.push_back(temp); 
+            having.clear();
         }
         if(Formatdecider(word) == "S"){
             helper_S(sentence);
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+             cout<<temp<<endl;
+            final.push_back(temp); 
+            having.clear();
         }
         if(Formatdecider(word) == "SB"){
             helper_SB(sentence);
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+            final.push_back(temp); 
+            having.clear();
         }
         if(Formatdecider(word) == "U"){
             helper_U(sentence);
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+            final.push_back(temp); 
+            having.clear();
         }
         if(Formatdecider(word) == "UJ"){
             helper_UJ(sentence);
+            string temp;
+            stringstream ss;
+            ss << "0x" << hex << pc;
+            temp+=ss.str();
+            temp+="         ";
+            temp+=having;
+            final.push_back(temp); 
+            having.clear();
         }       
         if(Formatdecider(word) == "NULL"){
             fout<<"\n\n*****Error Detected*****\n\n";
             fout<<"*****Commmand Not Found*****\n\n";
             error = true;
+            break;
         }       
-
+        // after completion of one instructions
+        pc+=4;
     }
     
-    for(auto val:finalhexadecimal){
-        cout<<val<<endl;
-    }
+    // for(auto val:final){
+    //     cout<<val<<endl;
+    // }
     fin.close();
     fout.close();
     return 0;
