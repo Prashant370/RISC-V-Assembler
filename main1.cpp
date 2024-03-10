@@ -257,14 +257,26 @@ string immediateToBinary21(string& immediate) {
 }
 void getImmediateI(string have, string &s){ // For I,S,SB,U,UJ Format
     if(error == true) return ;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     // have can be in any format
     s+=immediateToBinary12(have);
 }
 void getImmediateSlast(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary12(have); 
-    
+
     for(int i = 0; i <= 6 ;i++){
         s.push_back(bin[i]);
     }
@@ -272,6 +284,12 @@ void getImmediateSlast(string have, string &s){ // For I,S,SB,U,UJ Format
 void getImmediateSfirst(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return ;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary12(have); 
     for(int i = 7; i <= 11 ;i++){
         s.push_back(bin[i]);
@@ -281,6 +299,12 @@ void getImmediateSfirst(string have, string &s){ // For I,S,SB,U,UJ Format
 void getImmediateSBlast(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary13(have); 
     s.push_back(bin[0]);
     for(int i = 2; i <= 7 ;i++){
@@ -290,6 +314,12 @@ void getImmediateSBlast(string have, string &s){ // For I,S,SB,U,UJ Format
 void getImmediateSBfirst(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return ;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary13(have); 
     for(int i = 8; i <= 11 ;i++){
         s.push_back(bin[i]);
@@ -299,6 +329,12 @@ void getImmediateSBfirst(string have, string &s){ // For I,S,SB,U,UJ Format
 void getImmediateU(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return ;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary20(have); 
     for(int i = 0; i <= 19 ;i++){
         s.push_back(bin[i]);
@@ -308,6 +344,12 @@ void getImmediateU(string have, string &s){ // For I,S,SB,U,UJ Format
 void getImmediateUJ(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return ;
+    if(have[0] == 'x'){
+        fout<<"\n\n*****Error Detected*****\n\n";
+        fout<<"*****This is not Immediate Value*****\n\n";
+        error = true;
+        return;
+    }
     string bin = immediateToBinary21(have); 
     s.push_back(bin[0]);
     for(int i = 10; i <= 19 ;i++){
@@ -326,7 +368,6 @@ void getRegisterValue(string have, string &s){ // For R,I,S,SB,,U,UJ Format
     have = riscv_registers[have];
     if(have[0] != 'x'){
          
-        
         fout<<"\n\n*****Error Detected*****\n\n";
         fout<<"*****Register Name is Wrong, Make sure spaces are there*****\n\n";
         error = true;
@@ -760,7 +801,7 @@ void helper_U(string sentence){
         }
         else imm = tag;
      
-        
+        cout<<imm<<endl;
         getImmediateU(imm,ans);
         getRegisterValue(rd,ans);
         getopCode(command,ans);
@@ -995,13 +1036,14 @@ void read_data(){
                 }
             }
             else if(directives == ".asciiz"){
-                isss >> directives;
+                getline(isss,directives);
                 
                 
                 string keep ;
                 // as I need to remove "  " from string
-                for(int i = 1; i < directives.size() - 1; i++) keep.push_back(directives[i]);
-               
+                
+                for(int i = 2; i < directives.size() - 1; i++) keep.push_back(directives[i]);
+           
                 for(int k = 0; k <= keep.size(); k++){
                     string p;
                     p = to_string((int)(keep[k]));
