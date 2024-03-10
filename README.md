@@ -93,3 +93,14 @@ The following project is a course project under the guidance of [Dr T.V Kalyan](
 4. Another file named `comment_free_test_file.asm` will be created from `test_file.asm`.
 
 5. You are ready with machine code in `output.mc` file, which includes the memory segment as well.
+
+
+# Screenshots
+### Input Assembly Code Looks like 
+![input](https://github.com/Prashant370/RISC-V-Assembler/assets/100296448/5a8e4a4f-e612-4d8b-821e-401e8293543f)
+### Output Expected Machine Code
+![output](https://github.com/Prashant370/RISC-V-Assembler/assets/100296448/09f512db-f8bb-45f9-9f2c-97afc1b20d2a)
+### Memory Segment Looks Like
+![mem](https://github.com/Prashant370/RISC-V-Assembler/assets/100296448/9d22f46d-6261-4918-b76f-058d83ea5d36)
+
+ 
