@@ -801,7 +801,7 @@ void helper_U(string sentence){
         }
         else imm = tag;
      
-        cout<<imm<<endl;
+        // cout<<imm<<endl;
         getImmediateU(imm,ans);
         getRegisterValue(rd,ans);
         getopCode(command,ans);
