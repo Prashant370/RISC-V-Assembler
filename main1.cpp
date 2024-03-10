@@ -472,6 +472,7 @@ void helper_I(string sentence){
             error = true;
             return;
         }
+        
             getImmediateI(imm,ans);
             getRegisterValue(rs1,ans);
             getFunc3(command,ans);
@@ -602,7 +603,7 @@ void helper_S(string sentence){
             return;
         }
         string ans;
-
+    
         getImmediateSlast(imm,ans);
         getRegisterValue(rs2,ans);
         getRegisterValue(rs1,ans);
@@ -684,8 +685,7 @@ void helper_SB(string sentence){
             //cout<<imm<<endl;
         }
         else imm = tag;
-     
-
+  
         getImmediateSBlast(imm,ans);
         getRegisterValue(rs2,ans);
         getRegisterValue(rs1,ans);
@@ -760,7 +760,7 @@ void helper_U(string sentence){
         }
         else imm = tag;
      
-
+        
         getImmediateU(imm,ans);
         getRegisterValue(rd,ans);
         getopCode(command,ans);
@@ -834,6 +834,7 @@ void helper_UJ(string sentence){
         else {
             imm = tag;
         }
+    
         getImmediateUJ(imm,ans);
         getRegisterValue(rd,ans);
         getopCode(command,ans);
@@ -854,11 +855,20 @@ string memConverter(string& value, int digits) {
     } else {
         // Decimal format
         decimalValue = stoll(value);
+        
     }
+    // Mask to limit the value to the specified number of digits
+    if(digits != 16){
 
+    long long mask = (1LL << (digits * 4)) - 1;
+    
+    decimalValue &= mask;
+    }
     // Convert decimal value to hexadecimal string with specified number of digits
     stringstream ss;
+    
     ss << hex << setw(digits) << setfill('0') << uppercase << decimalValue;
+    
     return ss.str();
 }
 
@@ -904,8 +914,10 @@ void read_data(){
                                 j = 7;
                             }
                         }
-                    
-                    if(j == -1) j = 7;
+                    if(j == -1){
+                         j = 7;
+                         i--;
+                    }
                     col = j;
                     row = i; // update the row and column
                 }
@@ -915,8 +927,8 @@ void read_data(){
                 while(isss >> directives){
                     if(directives[directives.size()-1]==',') directives.pop_back();
                      string temp = memConverter(directives,8);
-                    
-                    int idx = temp.size() - 1, i = row, j = col;
+                        
+                    int idx =  temp.size() - 1, i = row, j = col;
                         
                         for( ;idx >= 0;){
                             memory[i][j--] = temp[idx--];
@@ -927,9 +939,13 @@ void read_data(){
                             }
                         }
                     
-                    if(j == -1) j = 7;
+                    if(j == -1){
+                         j = 7;
+                         i--;
+                    }
                     col = j;
                     row = i; // update the row and column
+                   
                 }
             }
             else if(directives == ".half"){
@@ -947,7 +963,10 @@ void read_data(){
                             }
                         }
                     
-                    if(j == -1) j = 7;
+                    if(j == -1){
+                         j = 7;
+                         i--;
+                    }
                     col = j;
                     row = i; // update the row and column
                 }
@@ -967,7 +986,10 @@ void read_data(){
                             }
                         }
                     
-                    if(j == -1) j = 7;
+                    if(j == -1){
+                         j = 7;
+                         i--;
+                    }
                     col = j;
                     row = i; // update the row and column
                 }
@@ -995,7 +1017,10 @@ void read_data(){
                             }
                         }
                     
-                    if(j == -1) j = 7;
+                    if(j == -1){
+                         j = 7;
+                         i--;
+                    }
                     col = j;
                     row = i; // update the row and column
                 }
