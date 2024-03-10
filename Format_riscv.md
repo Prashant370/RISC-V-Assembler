@@ -32,8 +32,19 @@
 | lui         | U      | 0110111|       |         |
 | jal         | UJ     | 1101111|       |         |
 
+# Guidelines for ensuring the proper execution of code:
 
-### Supported Instructions and Formats
+- Each assembly directive should be written on its own line and followed by a space.
+- **`Comma cannot function as a delimiter unless preceded and followed by a space!`**
+- If a line contains a label, it cannot include any instructions. Please refer to the provided "input.asm" for label formatting.
+- Following a ".data" directive, ensure there is a ".text" before beginning the instruction sequence.
+- Ensure there is at least one space between variables (registers and labels) and immediate values.
+- Also, make sure there is at least one space between operand types and registers following the command.
+- If you intend to use any assembly directive, ensure you start with ".data" and then proceed to use supported directives such as ".half", ".word", and many more.
+
+
+
+# Supported Instructions and Formats
 
 1. **R Format**
    - **add rd, rs1, rs2**: Adds the values in registers rs1 and rs2 and stores the result in register rd.
