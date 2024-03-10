@@ -82,7 +82,7 @@ The following project is a course project under the guidance of [Dr T.V Kalyan](
 
 2. Compile the `main1.cpp` file using gcc:
     ```bash
-    gcc main1.cpp
+    g++ main1.cpp
     ```
 
 3. Run the executable:
