@@ -1,0 +1,6 @@
+add x3, x0, t0
+addi x0, zero sp # here it's wrong , dhro isko 
+.data
+var1: .word 5 10 15
+.text 
+beq x0 zero 0
