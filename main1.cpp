@@ -185,6 +185,7 @@ string immediateToBinary12(string& immediate) {
     bitset<12> bits(value);
     return bits.to_string();
 }
+
 string immediateToBinary13(string& immediate) {
     // Check if the immediate value is in decimal, binary, or hexadecimal format
     if(error == true) return "";
@@ -311,6 +312,7 @@ void getImmediateSBlast(string have, string &s){ // For I,S,SB,U,UJ Format
         s.push_back(bin[i]);
     }
 }
+
 void getImmediateSBfirst(string have, string &s){ // For I,S,SB,U,UJ Format
     // have can be in any format
     if(error == true) return ;
