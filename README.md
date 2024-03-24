@@ -2,7 +2,7 @@
 
 **Conversion of Assembly code to Machine code**
 
-The following project is a course project under the guidance of [Dr T.V Kalyan](https://sites.google.com/view/kalyantv). It is an Assembler which converts the `Assembly code` written in `RISCV syntax` to `Machine code`.
+The following project is a course project under the guidance of [Dr T.V Kalyan](https://sites.google.com/view/kalyantv). It is an Assembler written in c++ which converts the `Assembly code` written in `RISCV syntax` to `Machine code`.
 
 ## Valid Instructions
 
