@@ -24,6 +24,11 @@ map<string,vector<string>> Hm_T;
 map<string,vector<string>> Hm_oneBit;
 map<string,vector<string>> Hm_twoBit;
 
+// function declaration
+void check_Accuracy_NT(ofstream& file);
+void check_Accuracy_T(ofstream& file);
+void check_Accuracy_oneBit(ofstream& file);
+void check_Accuracy_twoBit(ofstream& file);
 
 struct InstructionDetails {
     string instruction;
@@ -132,8 +137,9 @@ void BTB_Display(){
 void BHT_Display(){
     ofstream fout;
     fout.open("BHT_T.txt");
-    fout<<"*******************************Branch History Table***************************\n\n";
-    fout<<"Always_Taken_predictor\n\n";
+    fout<<"**********Accuracy of Always_Taken_predictor**********\n\n";
+    check_Accuracy_T(fout);
+    fout<<"\n***********Branch History Table of Always_Taken_predictor**********\n\n";
     int i;
     i = 1;
     for(auto val:T_predicted){
@@ -187,13 +193,14 @@ void BHT_Display(){
     
     fout.close();
     fout.open("BHT_NT.txt");
-    fout<<"*******************************Branch History Table***************************\n\n";
-    fout<<"Always_Not_Taken_predictor\n\n";
+    fout<<"**********Accuracy of Always_Not_Taken_predictor**********\n\n";
+    check_Accuracy_NT(fout);
+    fout<<"\n***********Branch History Table of Always_Not_Taken_predictor***********\n\n";
      i = 1;
     for(auto val:NT_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
-        fout<<"Predicated : ";
+        fout<<"Predicted : ";
         int sz = NT_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
@@ -241,13 +248,14 @@ void BHT_Display(){
     fout.close();
 
     fout.open("BHT_oneBit.txt");
-    fout<<"*******************************Branch History Table***************************\n\n";
-    fout<<"One_Bit_predictor\n\n";
+    fout<<"**********Accuracy of One_Bit_predictor**********\n\n";
+    check_Accuracy_oneBit(fout);
+    fout<<"\n**********Branch History Table of One_Bit_predictor***********\n\n";
      i = 1;
     for(auto val:oneBit_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
-        fout<<"Predicated : ";
+        fout<<"Predicted : ";
         int sz = oneBit_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
@@ -293,13 +301,14 @@ void BHT_Display(){
     }
     fout.close();
     fout.open("BHT_twoBit.txt");
-    fout<<"*******************************Branch History Table***************************\n\n";
-    fout<<"Two_Bit_predictor\n\n";
+    fout<<"**********Accuracy of Two_Bit_predictor**********\n\n";
+    check_Accuracy_twoBit(fout);
+    fout<<"\n**********Branch History Table of Two_Bit_predictor***********\n\n";
      i = 1;
     for(auto val:twoBit_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
-        fout<<"Predicated : ";
+        fout<<"Predicted : ";
         int sz = twoBit_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
@@ -399,6 +408,8 @@ void Always_Taken_predictor(){
         
         //cout<<T_actual.size()<<endl;
     }
+
+    
 }
 
 void Always_Not_Taken_predictor(){
@@ -648,17 +659,86 @@ void double_bit_predictor(){
 }
 
 
-void check_Accuracy_NT(){
+void check_Accuracy_NT(ofstream& file){
+        // count Hit 
+        // accuracy = hit / total * 100;
+        int count_Hit = 0;
+        int Total = 0;
+        for(auto val:Hm_NT){
+            vector<string> vs = val.second;
+            for(auto it : vs){
+                if(it == "H") count_Hit ++;
+                Total++;
+            }
+        }
+
+        double accuracy ;
+        accuracy = static_cast<double>(count_Hit) / Total * 100;
+
+
+        cout << "Accuracy of Always_Not_Taken_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
 
 }
-void check_Accuracy_T(){
+void check_Accuracy_T(ofstream& file){
+        // count Hit 
+        // accuracy = hit / total * 100;
+        int count_Hit = 0;
+        int Total = 0;
+        for(auto val:Hm_T){
+            vector<string> vs = val.second;
+            for(auto it : vs){
+                if(it == "H") count_Hit ++;
+                Total++;
+            }
+        }
 
+        double accuracy ;
+        accuracy = static_cast<double>(count_Hit) / Total * 100;
+
+
+        cout << "Accuracy of Always_Taken_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
 }
-void check_Accuracy_oneBit(){
+void check_Accuracy_oneBit(ofstream& file){
+        // count Hit 
+        // accuracy = hit / total * 100;
+        int count_Hit = 0;
+        int Total = 0;
+        for(auto val:Hm_oneBit){
+            vector<string> vs = val.second;
+            for(auto it : vs){
+                if(it == "H") count_Hit ++;
+                Total++;
+            }
+        }
 
+        double accuracy ;
+        accuracy = static_cast<double>(count_Hit) / Total * 100;
+
+
+        cout << "Accuracy of One_Bit_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Accuracy : " << fixed << setprecision(2) << accuracy << "%" << endl;
 }
-void check_Accuracy_twoBit(){
+void check_Accuracy_twoBit(ofstream& file){
+        // count Hit 
+        // accuracy = hit / total * 100;
+        int count_Hit = 0;
+        int Total = 0;
+        for(auto val:Hm_twoBit){
+            vector<string> vs = val.second;
+            for(auto it : vs){
+                if(it == "H") count_Hit ++;
+                Total++;
+            }
+        }
 
+        double accuracy ;
+        accuracy = static_cast<double>(count_Hit) / Total * 100;
+
+
+        cout << "Accuracy of Two_Bit_Predictor : " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
 }
 
 
@@ -666,11 +746,15 @@ int main() {
     
    
     BTB_Display();
+
     Always_Taken_predictor();
-  
     Always_Not_Taken_predictor();
     single_bit_predictor();
     double_bit_predictor();
+
     BHT_Display();
+
+
+
     return 0;
 }
