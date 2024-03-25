@@ -34,7 +34,7 @@ struct InstructionDetails {
 
 // use regex for matching the string to given format 
 InstructionDetails Extraction(const string& line) {
-    regex pattern(R"(core\s+(\d+):\s+(0x[0-9a-fA-F]+)\s+\((0x[0-9a-fA-F]+)\)\s+(b[a-z])\s+.*pc \+ (\d+).)");
+    regex pattern(R"(core\s+(\d+):\s+(0x[0-9a-fA-F]+)\s+\((0x[0-9a-fA-F]+)\)\s+(b[a-z]*)\s+.*pc \+ (\d+).*)");
     smatch match;
 
     if (regex_match(line, match, pattern)) {
@@ -95,7 +95,7 @@ void BTB_Display(){
             BTB[currPC] = targetPC;
         }
     }
-    fout<<"Branch Target Buffer\n";
+    fout<<"*****************************Branch Target Buffer***************************\n";
     fout<<"Current PC | Target PC\n";
     fout<<"-----------------------\n";
     for(auto val:BTB){
@@ -107,7 +107,113 @@ void BTB_Display(){
 }
 
 void BHT_Display(){
+    ofstream fout;
+    fout.open("BHT_T.txt");
+    fout<<"*******************************Branch History Table***************************\n\n";
+    fout<<"Always_Taken_predictor\n\n";
+    int i;
+    i = 1;
+    for(auto val:T_predicated){
+        fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
+        
+        fout<<"Predicated : ";
+        int sz = T_predicated[val.first].size();
+        
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<T_predicated[val.first][j];
+            }
+            else{
+                fout<<T_predicated[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"Actual     : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<T_actual[val.first][j];
+            }
+            else{
+                fout<<T_actual[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"Hit/Miss   : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<Hm_T[val.first][j];
+            }
+            else{
+                fout<<Hm_T[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"State      : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<State_T[val.first][j];
+            }
+            else{
+                fout<<State_T[val.first][j]<<" | ";
+            }
+        }
+        fout<<"\n------------------------------------------\n";
+      
+    }
     
+    fout.close();
+    fout.open("BHT_NT.txt");
+    fout<<"*******************************Branch History Table***************************\n\n";
+    fout<<"Always_Not_Taken_predictor\n\n";
+     i = 1;
+    for(auto val:NT_predicated){
+        fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
+        
+        fout<<"Predicated : ";
+        int sz = NT_predicated[val.first].size();
+        
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<NT_predicated[val.first][j];
+            }
+            else{
+                fout<<NT_predicated[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"Actual     : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<NT_actual[val.first][j];
+            }
+            else{
+                fout<<NT_actual[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"Hit/Miss   : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<Hm_NT[val.first][j];
+            }
+            else{
+                fout<<Hm_NT[val.first][j]<<" | ";
+            }
+        }
+        fout<<endl;
+        fout<<"State      : ";
+        for(int j = 0; j < sz; j++){
+            if(j == sz - 1){
+                fout<<State_NT[val.first][j];
+            }
+            else{
+                fout<<State_NT[val.first][j]<<" | ";
+            }
+        }
+        fout<<"\n------------------------------------------\n";
+      
+    }
+
 }
 
 
