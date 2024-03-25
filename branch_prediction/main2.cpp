@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include <fstream>
 using namespace std;
-
+#define int long long
 // Branch History Table 
 map<string,vector<string>> NT_actual;
 map<string,vector<string>> NT_predicted;
@@ -59,7 +59,7 @@ InstructionDetails Extraction(string& line) {
         sign = token;
         
         iss >> token;
-        valueAfterPC = stoi(token);
+        valueAfterPC = stoll(token);
 
         if(sign == "-") valueAfterPC *= -1; 
     }
@@ -742,7 +742,7 @@ void check_Accuracy_twoBit(ofstream& file){
 }
 
 
-int main() {
+signed main() {
     
    
     BTB_Display();
