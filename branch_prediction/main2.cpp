@@ -5,13 +5,13 @@ using namespace std;
 
 // Branch History Table 
 map<string,vector<string>> NT_actual;
-map<string,vector<string>> NT_predicated;
+map<string,vector<string>> NT_predicted;
 map<string,vector<string>> T_actual;
-map<string,vector<string>> T_predicated;
+map<string,vector<string>> T_predicted;
 map<string,vector<string>> oneBit_actual;
-map<string,vector<string>> oneBit_predicated;
+map<string,vector<string>> oneBit_predicted;
 map<string,vector<string>> twoBit_actual;
-map<string,vector<string>> twoBit_predicated;
+map<string,vector<string>> twoBit_predicted;
 
 // STATE INITIALISATIONS
 map<string,vector<string>> State_NT;
@@ -136,19 +136,19 @@ void BHT_Display(){
     fout<<"Always_Taken_predictor\n\n";
     int i;
     i = 1;
-    for(auto val:T_predicated){
+    for(auto val:T_predicted){
         
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
         fout<<"Predicted : ";
-        int sz = T_predicated[val.first].size();
+        int sz = T_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
             if(j == sz - 1){
-                fout<<T_predicated[val.first][j];
+                fout<<T_predicted[val.first][j];
             }
             else{
-                fout<<T_predicated[val.first][j]<<" | ";
+                fout<<T_predicted[val.first][j]<<" | ";
             }
         }
         fout<<endl;
@@ -190,18 +190,18 @@ void BHT_Display(){
     fout<<"*******************************Branch History Table***************************\n\n";
     fout<<"Always_Not_Taken_predictor\n\n";
      i = 1;
-    for(auto val:NT_predicated){
+    for(auto val:NT_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
         fout<<"Predicated : ";
-        int sz = NT_predicated[val.first].size();
+        int sz = NT_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
             if(j == sz - 1){
-                fout<<NT_predicated[val.first][j];
+                fout<<NT_predicted[val.first][j];
             }
             else{
-                fout<<NT_predicated[val.first][j]<<" | ";
+                fout<<NT_predicted[val.first][j]<<" | ";
             }
         }
         fout<<endl;
@@ -244,18 +244,18 @@ void BHT_Display(){
     fout<<"*******************************Branch History Table***************************\n\n";
     fout<<"One_Bit_predictor\n\n";
      i = 1;
-    for(auto val:oneBit_predicated){
+    for(auto val:oneBit_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
         fout<<"Predicated : ";
-        int sz = oneBit_predicated[val.first].size();
+        int sz = oneBit_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
             if(j == sz - 1){
-                fout<<oneBit_predicated[val.first][j];
+                fout<<oneBit_predicted[val.first][j];
             }
             else{
-                fout<<oneBit_predicated[val.first][j]<<" | ";
+                fout<<oneBit_predicted[val.first][j]<<" | ";
             }
         }
         fout<<endl;
@@ -296,18 +296,18 @@ void BHT_Display(){
     fout<<"*******************************Branch History Table***************************\n\n";
     fout<<"Two_Bit_predictor\n\n";
      i = 1;
-    for(auto val:twoBit_predicated){
+    for(auto val:twoBit_predicted){
         fout<<"("<<i++<<") BHT for PC "<<val.first<<" \n";
         
         fout<<"Predicated : ";
-        int sz = twoBit_predicated[val.first].size();
+        int sz = twoBit_predicted[val.first].size();
         
         for(int j = 0; j < sz; j++){
             if(j == sz - 1){
-                fout<<twoBit_predicated[val.first][j];
+                fout<<twoBit_predicted[val.first][j];
             }
             else{
-                fout<<twoBit_predicated[val.first][j]<<" | ";
+                fout<<twoBit_predicted[val.first][j]<<" | ";
             }
         }
         fout<<endl;
@@ -379,7 +379,7 @@ void Always_Taken_predictor(){
                 // predication right
                // cout<<T_actual.size()<<endl;
                 T_actual[currPC].push_back("T");
-                T_predicated[currPC].push_back("T");
+                T_predicted[currPC].push_back("T");
                 State_T[currPC].push_back("T");
                 Hm_T[currPC].push_back("H");
                 //if(T_actual["0x80005b98"].size() > 0) cout<<T_actual["0x80005b98"][0];
@@ -389,7 +389,7 @@ void Always_Taken_predictor(){
                 //  cout<<currPC<<" "<<nextPC<<endl;
                 // predication not right 
                 T_actual[currPC].push_back("NT");
-                T_predicated[currPC].push_back("T");
+                T_predicted[currPC].push_back("T");
                 State_T[currPC].push_back("T");
                 Hm_T[currPC].push_back("M");
                 //cout<<T_actual.size()<<endl;
@@ -423,14 +423,14 @@ void Always_Not_Taken_predictor(){
             if(targetPC == nextPC){
                
                 NT_actual[currPC].push_back("T");
-                NT_predicated[currPC].push_back("NT");
+                NT_predicted[currPC].push_back("NT");
                 State_NT[currPC].push_back("NT");
                 Hm_NT[currPC].push_back("M");
             }
             else{
                 // predication not right 
                 NT_actual[currPC].push_back("NT");
-                NT_predicated[currPC].push_back("NT");
+                NT_predicted[currPC].push_back("NT");
                 State_NT[currPC].push_back("NT");
                 Hm_NT[currPC].push_back("H");
             }
@@ -476,13 +476,13 @@ void single_bit_predictor(){
                 // T
                 if(pred[currPC] == "T"){
                     oneBit_actual[currPC].push_back("T");
-                    oneBit_predicated[currPC].push_back("T");
+                    oneBit_predicted[currPC].push_back("T");
                     State_oneBit[currPC].push_back("T");
                     Hm_oneBit[currPC].push_back("H");
                 }
                 else{
                     oneBit_actual[currPC].push_back("T");
-                    oneBit_predicated[currPC].push_back("NT");
+                    oneBit_predicted[currPC].push_back("NT");
                     State_oneBit[currPC].push_back("NT");
                     Hm_oneBit[currPC].push_back("M");
                 }
@@ -492,13 +492,13 @@ void single_bit_predictor(){
                 // NT
                 if(pred[currPC] == "T"){
                     oneBit_actual[currPC].push_back("NT");
-                    oneBit_predicated[currPC].push_back("T");
+                    oneBit_predicted[currPC].push_back("T");
                     State_oneBit[currPC].push_back("T");
                     Hm_oneBit[currPC].push_back("M");                
                 }
                 else{
                     oneBit_actual[currPC].push_back("NT");
-                    oneBit_predicated[currPC].push_back("NT");
+                    oneBit_predicted[currPC].push_back("NT");
                     State_oneBit[currPC].push_back("NT");
                     Hm_oneBit[currPC].push_back("H");
                 }
@@ -545,7 +545,7 @@ void double_bit_predictor(){
                 // T
                 if(pred[currPC] == "T"){
                     twoBit_actual[currPC].push_back("T");
-                    twoBit_predicated[currPC].push_back("T");
+                    twoBit_predicted[currPC].push_back("T");
                     Hm_twoBit[currPC].push_back("H");
                     State_twoBit[currPC].push_back(state[currPC]);
 
@@ -569,7 +569,7 @@ void double_bit_predictor(){
                 }
                 else{
                     twoBit_actual[currPC].push_back("T");
-                    twoBit_predicated[currPC].push_back("NT");
+                    twoBit_predicted[currPC].push_back("NT");
                     Hm_twoBit[currPC].push_back("M");
                     State_twoBit[currPC].push_back(state[currPC]);
 
@@ -597,7 +597,7 @@ void double_bit_predictor(){
                 // NT
                 if(pred[currPC] == "T"){
                     twoBit_actual[currPC].push_back("NT");
-                    twoBit_predicated[currPC].push_back("T");
+                    twoBit_predicted[currPC].push_back("T");
                     State_twoBit[currPC].push_back(state[currPC]);
                     Hm_twoBit[currPC].push_back("M");    
 
@@ -621,7 +621,7 @@ void double_bit_predictor(){
                 }
                 else{
                     twoBit_actual[currPC].push_back("NT");
-                    twoBit_predicated[currPC].push_back("NT");
+                    twoBit_predicted[currPC].push_back("NT");
                     State_twoBit[currPC].push_back(state[currPC]);
                     Hm_twoBit[currPC].push_back("H");
                     if(state[currPC] == "NT,NT"){ // 00
