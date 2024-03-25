@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 #include <fstream>
-#include <regex>
 using namespace std;
 
 // Branch History Table 
@@ -97,7 +96,8 @@ string addHex(string& hexString, int val) {
     hexValue += val;
 
     stringstream result;
-    result << "0x" << hex << hexValue;
+    result << "0x" << setfill('0') << setw(8) << hex << hexValue;
+
     return result.str();
 }
 void BTB_Display(){
