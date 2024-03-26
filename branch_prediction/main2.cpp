@@ -68,31 +68,6 @@ InstructionDetails Extraction(string& line) {
     return {instruction,valueAfterPC,PC};
 }
 
-
-
-
-string getPC(string have) {
-    // Store the current position of the file pointer
-    ifstream fin("input.txt");
-    string line;
-    string pc = "";
-    while(getline(fin,line)){
-        if(line == have){
-            getline(fin,line);
-            istringstream iss(line);
-            string word;
-            iss >> word ;
-            if (word == "core") {
-                iss >> pc; 
-                iss >> pc; 
-            }
-            break;
-        }
-    }
-        return pc;
-}
-
-
 string addHex(string& hexString, int val) {
     stringstream ss;
     ss << hex << hexString;
@@ -105,6 +80,7 @@ string addHex(string& hexString, int val) {
 
     return result.str();
 }
+
 void BTB_Display(){
     ifstream fin;
     ofstream fout;
@@ -125,6 +101,7 @@ void BTB_Display(){
     }
     fout<<"*****************************Branch Target Buffer***************************\n";
     fout<<"Current PC | Target PC\n";
+
     fout<<"-----------------------\n";
     for(auto val:BTB){
         fout<<val.first<<" | "<<val.second<<endl;
@@ -352,7 +329,6 @@ void BHT_Display(){
         fout<<"\n------------------------------------------\n";
       
     }
-
 }
 
 
@@ -407,9 +383,7 @@ void Always_Taken_predictor(){
         }
         
         //cout<<T_actual.size()<<endl;
-    }
-
-    
+    }    
 }
 
 void Always_Not_Taken_predictor(){
@@ -519,6 +493,7 @@ void single_bit_predictor(){
         }
     }
 }
+
 void double_bit_predictor(){
     // Branch History Table Should be Printed here accordingly 
     map<string,string> pred;
