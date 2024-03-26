@@ -1,6 +1,6 @@
 # RISC-V Assembler and Branch Prediction
 
-This repository contains implementations of a RISC-V Assembler and Branch Prediction algorithms, developed as part of a course project under the guidance of [Dr. T.V Kalyan](https://sites.google.com/view/kalyantv) and [Neeraj Goyal](https://sites.google.com/view/neerajgoel).
+This repository contains implementations of a RISC-V Assembler and Branch Prediction algorithms, developed as part of a course project under the guidance of [Dr. T.V Kalyan](https://sites.google.com/view/kalyantv) and [Dr. Neeraj Goel](https://sites.google.com/view/neerajgoel).
 
 ## RISC-V Assembler
 
