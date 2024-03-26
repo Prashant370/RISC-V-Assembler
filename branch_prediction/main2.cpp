@@ -653,6 +653,8 @@ void check_Accuracy_NT(ofstream& file){
 
         cout << "Accuracy of Always_Not_Taken_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
         file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Total Number of Conditional instructions : " << (Total) << endl;
+        file << "Number of instructions That is Mispredicted : " << (Total - count_Hit) << endl;
 
 }
 void check_Accuracy_T(ofstream& file){
@@ -674,6 +676,9 @@ void check_Accuracy_T(ofstream& file){
 
         cout << "Accuracy of Always_Taken_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
         file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Total Number of Conditional instructions : " << (Total) << endl;
+        file << "Number of instructions That is Mispredicted : " << (Total - count_Hit) << endl;
+
 }
 void check_Accuracy_oneBit(ofstream& file){
         // count Hit 
@@ -694,6 +699,9 @@ void check_Accuracy_oneBit(ofstream& file){
 
         cout << "Accuracy of One_Bit_Predictor: " << fixed << setprecision(2) << accuracy << "%" << endl;
         file << "Accuracy : " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Total Number of Conditional instructions : " << (Total) << endl;
+        file << "Number of instructions That is Mispredicted : " << (Total - count_Hit) << endl;
+
 }
 void check_Accuracy_twoBit(ofstream& file){
         // count Hit 
@@ -714,6 +722,9 @@ void check_Accuracy_twoBit(ofstream& file){
 
         cout << "Accuracy of Two_Bit_Predictor : " << fixed << setprecision(2) << accuracy << "%" << endl;
         file << "Accuracy: " << fixed << setprecision(2) << accuracy << "%" << endl;
+        file << "Total Number of Conditional instructions : " << (Total) << endl;
+        file << "Number of instructions That is Mispredicted : " << (Total - count_Hit) << endl;
+
 }
 
 
@@ -728,8 +739,6 @@ signed main() {
     double_bit_predictor();
 
     BHT_Display();
-
-
 
     return 0;
 }
